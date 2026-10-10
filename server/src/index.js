@@ -7,9 +7,14 @@ import aiRoutes from "./routes/ai.routes.js";
 import path from "path";
 import express from "express";
 
-const __dirname = path.resolve();
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
 const PORT = process.env.PORT || 5600;
 
@@ -52,12 +57,24 @@ const startServer = async () => {
       return res.status(500).json({ error: "Internal Server Error" });
     });
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`✅ Server is running at http://localhost:${PORT}`);
+    });
+
+    server.on("error", (err) => {
+      if (err.code === "EADDRINUSE") {
+        console.error(`❌ Port ${PORT} is already in use by another process.`);
+        console.error(`To release port ${PORT} on Windows, run:`);
+        console.error(`Get-NetTCPConnection -LocalPort ${PORT} -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }`);
+      } else {
+        console.error("❌ Server error:", err);
+      }
+      process.exit(1);
     });
   } catch (error) {
     console.error("❌ Error starting server:", error);
   }
 };
 
+// Start server
 startServer();

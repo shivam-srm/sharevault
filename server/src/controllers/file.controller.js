@@ -542,7 +542,12 @@ const updateFileExpiry = async (req, res) => {
         }
 
         if (expiresAt) {
-          file.expiresAt = new Date(Date.now() + expiresAt * 3600000); // Convert hours to milliseconds
+          if (!isNaN(Number(expiresAt)) && Number(expiresAt) > 0) {
+            file.expiresAt = new Date(Date.now() + Number(expiresAt) * 3600000);
+          } else if (!isNaN(new Date(expiresAt).getTime())) {
+            file.expiresAt = new Date(expiresAt);
+          }
+          file.hasExpiry = true;
         }
 
         await file.save();

@@ -1,8 +1,34 @@
 import axios from "axios";
 
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const DEFAULT_MODEL = "nvidia/nemotron-3-nano-30b-a3b:free";
-const VISION_MODEL = "nvidia/nemotron-nano-12b-v2-vl:free";
+const getAiConfig = () => {
+  if (process.env.GROQ_API_KEY) {
+    return {
+      provider: "Groq",
+      url: process.env.GROQ_URL || "https://api.groq.com/openai/v1/chat/completions",
+      apiKey: process.env.GROQ_API_KEY,
+      model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+      visionModel: process.env.GROQ_VISION_MODEL || "llama-3.2-11b-vision-preview",
+    };
+  }
+
+  if (process.env.GEMINI_API_KEY) {
+    return {
+      provider: "Gemini",
+      url: process.env.GEMINI_URL || "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+      apiKey: process.env.GEMINI_API_KEY,
+      model: process.env.GEMINI_MODEL || "gemini-1.5-flash",
+      visionModel: process.env.GEMINI_VISION_MODEL || "gemini-1.5-flash",
+    };
+  }
+
+  return {
+    provider: "OpenRouter",
+    url: process.env.AI_BASE_URL || "https://openrouter.ai/api/v1/chat/completions",
+    apiKey: process.env.OPENROUTER_API_KEY,
+    model: process.env.OPENROUTER_MODEL || "openrouter/free",
+    visionModel: process.env.OPENROUTER_VISION_MODEL || "openrouter/free",
+  };
+};
 
 const DOC_TYPES = ["academic", "code", "legal", "invoice", "image", "other"];
 const RISKS = ["LOW", "MEDIUM", "HIGH"];
@@ -18,24 +44,29 @@ class AIServiceError extends Error {
 }
 
 const callOpenRouter = async (messages, { maxTokens = 1200, temperature = 0.2, model } = {}) => {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new AIServiceError("AI service unavailable: OpenRouter is not configured.", 500);
+  const config = getAiConfig();
+  if (!config.apiKey) {
+    throw new AIServiceError(
+      "AI service unavailable: No API key configured. Please set GROQ_API_KEY, GEMINI_API_KEY, or OPENROUTER_API_KEY in .env.",
+      500
+    );
   }
 
   try {
+    const selectedModel = model || config.model;
     const { data } = await axios.post(
-      OPENROUTER_URL,
+      config.url,
       {
-        model: model || process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
+        model: selectedModel,
         messages,
         temperature,
         max_tokens: maxTokens,
       },
       {
         headers: {
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${config.apiKey}`,
           "Content-Type": "application/json",
+          "HTTP-Referer": process.env.CLIENT_URL || "http://localhost:5600",
           "X-Title": "ShareVault AI",
         },
         timeout: 90000,
@@ -47,8 +78,13 @@ const callOpenRouter = async (messages, { maxTokens = 1200, temperature = 0.2, m
     return content;
   } catch (err) {
     if (err instanceof AIServiceError) throw err;
-    console.error("OpenRouter error:", err.response?.status, err.response?.data || err.message);
-    throw new AIServiceError("AI service unavailable. Please try again later.", 500);
+    const status = err.response?.status || 500;
+    const errorMsg =
+      err.response?.data?.error?.message ||
+      err.response?.data?.message ||
+      "AI service unavailable. Please try again later.";
+    console.error(`${config.provider} error:`, status, err.response?.data || err.message);
+    throw new AIServiceError(errorMsg, status);
   }
 };
 
@@ -155,7 +191,7 @@ export const chatWithVaultAI = async ({ systemPrompt, history = [], message, att
   let model;
 
   if (attachment?.kind === "image" && attachment.dataUrl) {
-    model = process.env.OPENROUTER_VISION_MODEL || VISION_MODEL;
+    model = getAiConfig().visionModel;
     userMessage = {
       role: "user",
       content: [
