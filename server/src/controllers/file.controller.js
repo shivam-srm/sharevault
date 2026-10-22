@@ -1,6 +1,5 @@
 import { File } from '../models/file.models.js';
 import { GuestFile } from '../models/guestFile.models.js';
-import s3 from "../config/s3.js";
 import bcrypt from "bcryptjs";
 import AWS from "aws-sdk";
 import nodemailer from "nodemailer";
@@ -200,7 +199,9 @@ const uploadFilesGuest = async (req, res) => {
               let presignedPath = f.path;
               try {
                 presignedPath = await getSignedUrl(s3ClientV3, command, { expiresIn: 60 * 60 });
-              } catch (err) {}
+              } catch (err) {
+                console.error("Failed to generate guest file URL:", err);
+              }
               
               return {
                 id: f._id,
@@ -649,7 +650,9 @@ const searchFiles = async (req, res) => {
       });
       try {
         f.path = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });
-      } catch (err) {}
+      } catch (err) {
+        console.error("Failed to generate user file URL:", err);
+      }
       return f;
     }));
 
@@ -688,7 +691,9 @@ const showUserFiles = async (req, res) => {
       });
       try {
         f.path = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });
-      } catch (err) {}
+      } catch (err) {
+        console.error("Failed to generate user file URL:", err);
+      }
       return f;
     }));
 
@@ -722,7 +727,9 @@ const getFileDetails = async (req, res) => {
     });
     try {
       f.path = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });
-    } catch (err) {}
+    } catch (err) {
+      console.error("Failed to generate file details URL:", err);
+    }
     
     return res.status(200).json(f);
   }
@@ -848,7 +855,6 @@ const getDownloadCount = async (req, res) => {
 const resolveShareLink = async (req, res) => {
   const { code } = req.params;
 const shortUrl = `${process.env.BASE_URL}/f/${code}`;
-const file = await File.findOne({ shortUrl });
 
   try {
     const file = await File.findOne({ shortUrl });
@@ -878,7 +884,9 @@ const file = await File.findOne({ shortUrl });
         Key: `file-share-app/${file.name}`
       });
       previewUrl = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });
-    } catch (err) {}
+    } catch (err) {
+      console.error("Failed to generate shared file URL:", err);
+    }
 
     return res.status(200).json({
       fileId: file._id,

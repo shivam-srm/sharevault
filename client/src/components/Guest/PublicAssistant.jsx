@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FiSend, FiX, FiMinus, FiMaximize2 } from "react-icons/fi";
 import ReactMarkdown from "react-markdown";
 import axiosInstance from "../../config/axiosInstance";
@@ -26,6 +26,7 @@ const PublicAssistant = () => {
   const [chat, setChat] = useState(STARTER_MESSAGES);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -138,7 +139,7 @@ const PublicAssistant = () => {
                 {SUGGESTIONS.map((s) => (
                   <button
                     key={s}
-                    onClick={() => send(s)}
+                    onClick={() => handleSend(s)}
                     className="text-[11px] px-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-[var(--text-muted)]"
                   >
                     {s}

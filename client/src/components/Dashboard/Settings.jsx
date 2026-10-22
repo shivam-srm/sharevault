@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { FiSun, FiMoon, FiMonitor, FiBell, FiEye, FiSave, FiCheck } from "react-icons/fi";
 import useTheme from "../../hooks/useTheme";
 
@@ -57,6 +58,11 @@ const Toggle = ({ checked, onChange }) => (
     />
   </button>
 );
+
+Toggle.propTypes = {
+  checked: PropTypes.bool.isRequired,
+  onChange: PropTypes.func.isRequired,
+};
 
 const Settings = () => {
   const { theme, mode, setTheme, setMode } = useTheme();

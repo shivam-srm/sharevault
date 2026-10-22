@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { formatDistanceToNowStrict, differenceInDays } from "date-fns";
 import {
   FaWhatsapp,
   FaTelegramPlane,
   FaInstagram,
   FaEnvelope,
-  FaHeadset,
   FaDownload,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -14,7 +13,6 @@ import { Link } from "react-router-dom";
 import { FaEye, FaShare, FaTrashAlt } from "react-icons/fa";
 
 const GuestFilePreview = ({ guestFiles }) => {
-  const dispatch = useDispatch();
   const [files, setFiles] = useState(guestFiles || []);
   const [previewFile, setPreviewFile] = useState(null);
   const [shareFile, setShareFile] = useState(null);
@@ -214,7 +212,6 @@ const GuestFilePreview = ({ guestFiles }) => {
 
                 <tbody className="bg-[var(--bg-color)] divide-y divide-[var(--border-color)]">
                   {paginatedFiles?.map((file) => {
-                    const shareLinks = handleShare(file.shortUrl);
                     const formattedSize =
                       file.size > 1024 * 1024
                         ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
@@ -499,7 +496,7 @@ const GuestFilePreview = ({ guestFiles }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-[--bg-color] p-6 rounded shadow-lg w-full max-w-md md:max-w-2xl">
             <h3 className="text-lg font-bold mb-4 text-center">
-              Share "{shareFile?.name}"
+              Share &quot;{shareFile?.name}&quot;
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[var(--text-color)]">
@@ -588,6 +585,10 @@ const GuestFilePreview = ({ guestFiles }) => {
       )}
     </div>
   );
+};
+
+GuestFilePreview.propTypes = {
+  guestFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
 };
 
 export default GuestFilePreview;

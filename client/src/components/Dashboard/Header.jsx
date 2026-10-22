@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Logo from "../Logo";
@@ -54,6 +54,11 @@ const Header = ({ sidebarOpen, setSidebarOpen }) => {
       </div>
     </header>
   );
+};
+
+Header.propTypes = {
+  sidebarOpen: PropTypes.bool.isRequired,
+  setSidebarOpen: PropTypes.func.isRequired,
 };
 
 export default Header;

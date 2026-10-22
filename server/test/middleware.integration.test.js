@@ -6,11 +6,13 @@ import request from "supertest";
 import { z } from "zod";
 import authenticate from "../src/middlewares/auth.middlewares.js";
 import { validate } from "../src/middlewares/validate.middlewares.js";
+import userRoutes from "../src/routes/user.routes.js";
 
 process.env.JWT_SECRET = "sharevault-test-secret";
 
 const app = express();
 app.use(express.json());
+app.use("/api/users", userRoutes);
 
 app.post(
   "/validated",
@@ -103,5 +105,37 @@ test("authentication protects routes and accepts a valid bearer token", async (t
 
     assert.equal(response.status, 200);
     assert.deepEqual(response.body, { userId: "test-user" });
+  });
+});
+
+test("user API routes validate input and support logout without a database", async (t) => {
+  await t.test("rejects invalid registration data before accessing persistence", async () => {
+    const response = await request(app)
+      .post("/api/users/register")
+      .send({
+        fullname: "Example User",
+        email: "not-an-email",
+        password: "password123",
+      });
+
+    assert.equal(response.status, 400);
+    assert.deepEqual(response.body, { message: "Invalid email format." });
+  });
+
+  await t.test("requires authentication on the user profile endpoint", async () => {
+    const response = await request(app).get("/api/users/user");
+
+    assert.equal(response.status, 401);
+    assert.deepEqual(response.body, {
+      message: "Access denied. No token provided.",
+    });
+  });
+
+  await t.test("logs out through the public user API route", async () => {
+    const response = await request(app).get("/api/users/logout");
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(response.body, { message: "Logout successful" });
+    assert.ok(response.headers["set-cookie"]?.some((cookie) => cookie.startsWith("token=")));
   });
 });

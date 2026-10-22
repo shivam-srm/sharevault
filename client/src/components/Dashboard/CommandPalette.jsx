@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { FiSearch, FiHome, FiUpload, FiUser, FiSettings, FiLogOut, FiFile, FiCopy, FiSun, FiMoon } from "react-icons/fi";
+import { FiSearch, FiHome, FiUpload, FiUser, FiSettings, FiLogOut, FiFile, FiCopy, FiSun } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 const navigateTab = (tab) =>
@@ -12,7 +11,6 @@ const CommandPalette = () => {
   const [q, setQ] = useState("");
   const [idx, setIdx] = useState(0);
   const inputRef = useRef(null);
-  const navigate = useNavigate();
   const { files } = useSelector((s) => s.file);
 
   useEffect(() => {

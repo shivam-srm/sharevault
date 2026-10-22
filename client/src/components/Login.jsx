@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -123,7 +123,7 @@ const Login = () => {
             </form>
 
             <p className="mt-8 text-sm text-center text-[var(--text-muted)]">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link to="/signup" className="text-[var(--primary-text)] font-semibold hover:underline">Sign up free</Link>
             </p>
           </div>

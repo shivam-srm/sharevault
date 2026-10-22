@@ -1,13 +1,12 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
+import PropTypes from "prop-types";
 import "./GuestFileUpload.css";
-import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import axiosInstance from "../../config/axiosInstance";
 
 
 const GuestFileUpload = ({guestFiles, updateFiles}) => {
   const fileInputRef = useRef(null);
-  const dispatch = useDispatch();
   const [loading ,setLoading] = useState(false);
 
   const [files, setFiles] = useState(guestFiles || []);
@@ -300,6 +299,11 @@ const GuestFileUpload = ({guestFiles, updateFiles}) => {
       </div>
     </div>
   );
+};
+
+GuestFileUpload.propTypes = {
+  guestFiles: PropTypes.arrayOf(PropTypes.object).isRequired,
+  updateFiles: PropTypes.func.isRequired,
 };
 
 export default GuestFileUpload;

@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { FiUser } from "react-icons/fi";
 
 const WelcomeSection = ({ user }) => {
@@ -53,6 +53,16 @@ const WelcomeSection = ({ user }) => {
       </div>
     </section>
   );
+};
+
+WelcomeSection.propTypes = {
+  user: PropTypes.shape({
+    fullname: PropTypes.string,
+    email: PropTypes.string,
+    username: PropTypes.string,
+    _id: PropTypes.string,
+    profilePic: PropTypes.string,
+  }),
 };
 
 export default WelcomeSection;

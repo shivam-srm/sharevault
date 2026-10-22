@@ -734,7 +734,7 @@ const FileShow = () => {
           <div className="glass-strong border border-white/10 p-6 rounded-2xl shadow-[var(--shadow-elevated)] w-full max-w-md md:max-w-2xl my-8 animate-fade-in">
             <div className="flex items-center justify-between mb-5">
               <h3 className="text-lg font-bold font-display text-[var(--text-color)] break-all">
-                Share <span className="text-[var(--primary-text)]">"{shareFile?.name}"</span>
+                Share <span className="text-[var(--primary-text)]">&quot;{shareFile?.name}&quot;</span>
               </h3>
               <button
                 onClick={() => setShareFile(null)}

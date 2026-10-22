@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import shieldPng from "../assets/sharevault-shield.png";
 import ringPng from "../assets/sharevault-ring.png";
 
@@ -77,6 +77,11 @@ const Logo = ({ size = 48, className = "" }) => {
 
     </div>
   );
+};
+
+Logo.propTypes = {
+  size: PropTypes.number,
+  className: PropTypes.string,
 };
 
 export default Logo;

@@ -1,6 +1,5 @@
 // src/features/auth/authThunks.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import axiosInstance from '../../../config/axiosInstance';
 
 // REGISTER
@@ -58,7 +57,6 @@ export const getUser = createAsyncThunk('auth/getUser', async (userId, { rejectW
     return rejectWithValue(err.response.data);
   }
 });
-
 
 
 

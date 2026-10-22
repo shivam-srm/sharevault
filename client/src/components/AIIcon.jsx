@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 
 /**
  * Modern, bright, glowing AI Assistant Icon.
@@ -53,6 +53,11 @@ const AIIcon = ({ size = 24, className = "" }) => {
       </div>
     </div>
   );
+};
+
+AIIcon.propTypes = {
+  size: PropTypes.number,
+  className: PropTypes.string,
 };
 
 export default AIIcon;

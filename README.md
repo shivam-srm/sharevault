@@ -514,7 +514,7 @@ sharevault/
 ## 🚀 Quickstart Guide
 
 ### Prerequisites
-- **Node.js**: v18.0.0 or higher
+- **Node.js**: v22 (see `.nvmrc`)
 - **MongoDB**: Local MongoDB instance or free MongoDB Atlas URI
 - **AWS S3**: An S3 bucket with an IAM user credentials
 - **OpenRouter API Key**: Free key from [openrouter.ai](https://openrouter.ai/)
@@ -650,24 +650,106 @@ built-in test runner and Supertest; a Playwright browser smoke test exercises
 the public homepage. These tests do not connect to MongoDB, AWS, or external AI
 services.
 
-From the repository root, run:
+### Install dependencies reproducibly
+
+The client, server, and repository root have separate npm lockfiles. Use Node
+22 (`.nvmrc`) and install each lockfile independently:
 
 ```bash
-npm run test             # Run client and server tests
-npm run test:coverage    # Run both test suites with coverage reporting
-npm run test:e2e         # Run the Chromium browser smoke test
-npm run lint:test        # Lint the auth guard and its tests (CI check)
-npm run build            # Build the production client
+npm ci --ignore-scripts
+npm ci --prefix client
+npm ci --prefix server
+npm exec --prefix client -- playwright install chromium
 ```
 
-For focused work, `npm run test:watch --prefix client` starts the Vitest watch
-mode, while `npm test --prefix server` runs only the backend tests. Install
-Chromium with `npx playwright install chromium` before running E2E tests locally.
-GitHub Actions lints the tested flows, runs both coverage-enabled test suites,
-builds the production client, and runs browser tests on pushes and pull requests.
-The broader `npm run lint` script is also available for the full client. It
-currently reports pre-existing lint violations outside the tested flows; CI
-keeps its lint gate scoped to the covered code while that backlog is addressed.
+The root install uses `--ignore-scripts` because the legacy root `postinstall`
+recursively invokes `npm install` in both child packages. CI installs directly
+from each child lockfile instead.
+
+### Run checks locally
+
+```bash
+npm run lint              # Lint all client and server source and tests
+npm test                  # Run client and server tests
+npm run test:coverage     # Run both suites with coverage thresholds
+npm run test:e2e          # Run the Chromium browser smoke test
+npm run build             # Build the production client
+```
+
+Focused commands are `npm run lint:client`, `npm run lint:server`,
+`npm run test:watch --prefix client`, `npm test --prefix server`, and
+`npm run build --prefix client`.
+
+The repository does not currently configure Husky or pre-commit hooks. Run the
+fast lint/test commands locally as needed; GitHub Actions remains the
+authoritative merge gate and cannot be skipped by bypassing a local hook.
+
+### GitHub Actions CI
+
+`.github/workflows/ci.yml` validates pushes and pull requests targeting `main`.
+Independent `lint`, `test`, `build`, and `e2e` jobs report failures separately.
+The workflow uses Node 22, `npm ci` for the client and server lockfiles, npm
+caching, strict ESLint checks, coverage-enforced unit/integration tests, a
+production Vite build, and Chromium browser tests. The E2E job starts a local
+Vite server; CI does not need MongoDB, AWS, AI provider credentials, or any
+repository secrets. Workflow runs and step-by-step logs are available in the
+repository's **Actions** tab. Failed E2E runs upload the Playwright HTML report
+and traces as a workflow artifact.
+See [TEST-REPORT.md](./TEST-REPORT.md) for the latest local verification
+summary; GitHub-run results are shown only in the Actions tab.
+
+To require CI before merging, open **Settings → Rules → Rulesets** (or
+**Settings → Branches → Branch protection rules**) and create a rule for
+`main`. Require pull requests and require these status checks:
+
+- `CI / lint`
+- `CI / test`
+- `CI / build`
+- `CI / e2e`
+
+Enable **Require branches to be up to date before merging** if the team wants
+checks rerun against the latest target branch. GitHub repository settings are
+not changed by this workflow; an administrator must configure the rule.
+
+### Secrets and deployment
+
+No GitHub Secrets are needed for CI. Keep the application's local `.env` files
+out of version control; do not add production database, AWS, JWT, or AI keys to
+the CI workflow. The repository currently has no deployment workflow or hosting
+manifest, so CI verifies the production client build but deliberately does not
+deploy. If hosting automation is added later, use a separate workflow and
+GitHub Environments with environment-scoped credentials and production
+approval protection; configure those credentials under **Settings → Secrets
+and variables → Actions** or the relevant Environment's secrets.
+
+### Dependency audit
+
+On 2026-10-23, npm's production dependency audit reported 10 client advisories
+(including 1 critical) and 56 server advisories (including 3 critical). The CI
+workflow does not currently gate merges on `npm audit`, because doing so would
+block every run until the affected dependencies are reviewed, upgraded, and
+regression-tested. Review the current advisories with:
+
+```bash
+npm run audit:production
+```
+
+These findings are separate from the lint, test, and build results and should
+be resolved before treating a deployment as production-ready.
+
+### Troubleshooting
+
+- **`npm ci` lockfile errors:** run it from the matching package directory or
+  use the `--prefix client` / `--prefix server` commands above. Commit lockfile
+  updates whenever dependency manifests change.
+- **Node engine or coverage-option errors:** switch to Node 22 as specified by
+  `.nvmrc`.
+- **Playwright browser missing locally:** run
+  `npm exec --prefix client -- playwright install chromium`.
+- **CI check missing in branch protection:** make sure a workflow run for the
+  target branch has completed, then select the exact `CI / ...` check names.
+- **Build or test failure:** open the failed job in the Actions tab and expand
+  the failing step; CI logs do not include application secrets.
 
 ## 🛠 Troubleshooting & FAQs
 

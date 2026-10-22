@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import {
   FiX,
@@ -361,6 +362,13 @@ const AIAnalysisModal = ({ isOpen, fileId, fileName, onClose }) => {
       </div>
     </div>
   );
+};
+
+AIAnalysisModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  fileId: PropTypes.string,
+  fileName: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default AIAnalysisModal;

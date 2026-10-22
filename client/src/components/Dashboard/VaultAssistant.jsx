@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { FiMessageSquare, FiSend, FiX, FiMinus, FiMaximize2, FiCpu, FiPaperclip, FiFileText, FiImage } from "react-icons/fi";
+import { useState, useRef, useEffect } from "react";
+import { FiSend, FiX, FiMinus, FiMaximize2, FiPaperclip, FiFileText, FiImage } from "react-icons/fi";
 import axiosInstance from "../../config/axiosInstance";
 import { toast } from "react-toastify";
 import ReactMarkdown from "react-markdown";

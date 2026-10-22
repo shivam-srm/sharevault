@@ -86,7 +86,7 @@ const authSlice = createSlice({
             state.loading=true;
             state.error=null;
         })
-        .addCase(deleteUser.fulfilled,(state,action)=>{
+        .addCase(deleteUser.fulfilled,(state)=>{
             state.loading=false;
             state.user=null;
             state.isLoggedIn=false;

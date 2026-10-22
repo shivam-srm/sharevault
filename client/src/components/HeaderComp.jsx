@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "./Logo";
 import useTheme from "../hooks/useTheme";
@@ -26,6 +27,9 @@ const Header = () => {
     return (
       <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
     );
+  };
+  ModeIcon.propTypes = {
+    m: PropTypes.oneOf(["system", "light", "dark"]).isRequired,
   };
 
   const ModeSegmented = () => (

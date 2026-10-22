@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { Zap, Lock, Link2, Globe, BarChart3, Sparkles } from "lucide-react";
 
 // Animated feature icon — GPU-only (transform/opacity), respects reduced motion.
@@ -85,6 +85,11 @@ const FeatureIcon = ({ variant = "zap", size = 26 }) => {
       `}</style>
     </div>
   );
+};
+
+FeatureIcon.propTypes = {
+  variant: PropTypes.oneOf(["zap", "lock", "link", "globe", "chart", "sparkle"]),
+  size: PropTypes.number,
 };
 
 export default FeatureIcon;

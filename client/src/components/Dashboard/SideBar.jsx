@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { FiHome, FiUploadCloud, FiSettings, FiLogOut, FiUser } from "react-icons/fi";
 import Logo from "../Logo";
 
@@ -75,6 +75,13 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen, setActiveTab, activeTab }) => {
       </div>
     </aside>
   );
+};
+
+Sidebar.propTypes = {
+  sidebarOpen: PropTypes.bool.isRequired,
+  setSidebarOpen: PropTypes.func.isRequired,
+  setActiveTab: PropTypes.func.isRequired,
+  activeTab: PropTypes.string.isRequired,
 };
 
 export default Sidebar;

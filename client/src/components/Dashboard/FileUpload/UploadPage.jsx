@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./FileUploader.css";
 import { useDispatch, useSelector } from "react-redux";
 import { uploadFile } from "../../../redux/slice/file/fileThunk";
