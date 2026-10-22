@@ -11,6 +11,12 @@
     "build:dev": "cd client && npx vite build --outDir ../dist --emptyOutDir",
     "preview": "cd client && npx vite preview",
     "lint": "cd client && npx eslint . --ext js,jsx",
+    "lint:test": "npm run lint:test --prefix client",
+    "test": "npm run test:client && npm run test:server",
+    "test:client": "npm test --prefix client",
+    "test:server": "npm test --prefix server",
+    "test:coverage": "npm run test:coverage --prefix client && npm run test:coverage --prefix server",
+    "test:e2e": "npm run test:e2e --prefix client",
     "postinstall": "cd client && npm install && cd ../server && npm install"
   },
   "devDependencies": {

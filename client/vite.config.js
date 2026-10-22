@@ -1,4 +1,5 @@
-import { defineConfig, loadEnv } from 'vite'
+import { loadEnv } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
@@ -15,6 +16,21 @@ export default defineConfig(({ mode }) => {
         '/api': {
           target: apiTarget,
           changeOrigin: true,
+        },
+      },
+    },
+    test: {
+      environment: 'jsdom',
+      include: ['src/**/*.{test,spec}.{js,jsx}'],
+      setupFiles: './src/test/setup.js',
+      coverage: {
+        provider: 'v8',
+        include: ['src/components/Auth/NotRequireAuth.jsx'],
+        thresholds: {
+          statements: 90,
+          branches: 90,
+          functions: 90,
+          lines: 90,
         },
       },
     },

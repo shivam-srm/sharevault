@@ -1,6 +1,12 @@
 module.exports = {
   root: true,
   env: { browser: true, es2020: true },
+  overrides: [
+    {
+      files: ['playwright.config.js'],
+      env: { node: true },
+    },
+  ],
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',

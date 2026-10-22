@@ -43,6 +43,7 @@ ShareVault is a complete, full-stack web platform built with **React 18**, **Exp
 - [🏗 Architecture & Technology Stack](#-architecture--technology-stack)
 - [📁 Project Directory Structure](#-project-directory-structure)
 - [🚀 Quickstart Guide (How to Run Locally)](#-quickstart-guide)
+- [🧪 Testing & CI](#-testing--ci)
 - [🔌 Complete API Reference](#-complete-api-reference)
 - [🔒 Security Best Practices Implemented](#-security-best-practices-implemented)
 - [🛠 Troubleshooting & FAQs](#-troubleshooting--faqs)
@@ -640,6 +641,33 @@ npm run dev:all
 6. **Strict RAG Grounding**: The AI model operates with zero-hallucination prompting, preventing invented answers.
 
 ---
+
+## 🧪 Testing & CI
+
+The project uses a layered test setup: React component tests run with Vitest,
+Testing Library, and jsdom; backend middleware integration tests use Node's
+built-in test runner and Supertest; a Playwright browser smoke test exercises
+the public homepage. These tests do not connect to MongoDB, AWS, or external AI
+services.
+
+From the repository root, run:
+
+```bash
+npm run test             # Run client and server tests
+npm run test:coverage    # Run both test suites with coverage reporting
+npm run test:e2e         # Run the Chromium browser smoke test
+npm run lint:test        # Lint the auth guard and its tests (CI check)
+npm run build            # Build the production client
+```
+
+For focused work, `npm run test:watch --prefix client` starts the Vitest watch
+mode, while `npm test --prefix server` runs only the backend tests. Install
+Chromium with `npx playwright install chromium` before running E2E tests locally.
+GitHub Actions lints the tested flows, runs both coverage-enabled test suites,
+builds the production client, and runs browser tests on pushes and pull requests.
+The broader `npm run lint` script is also available for the full client. It
+currently reports pre-existing lint violations outside the tested flows; CI
+keeps its lint gate scoped to the covered code while that backlog is addressed.
 
 ## 🛠 Troubleshooting & FAQs
 
